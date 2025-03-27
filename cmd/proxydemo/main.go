@@ -6,7 +6,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/mwitkow/grpc-proxy/perfdog/fakeperfdog"
+	// "github.com/mwitkow/grpc-proxy/perfdog/fakeperfdog"
 	"github.com/mwitkow/grpc-proxy/perfdog/perfdog"
 	"github.com/mwitkow/grpc-proxy/proxy"
 	"google.golang.org/grpc"
@@ -39,8 +39,7 @@ func main() {
 		return outCtx, backendCC, nil
 	}
 	proxySrv := grpc.NewServer(grpc.UnknownServiceHandler(proxy.TransparentHandler(directorFn)))
-
-	fakeperfdog.RegisterPerfDogServiceServer(proxySrv, defaultPerfDogServiceServer)
+	perfdog.RegisterPerfDogServiceServerMini(proxySrv, defaultPerfDogServiceServer)
 	proxyBc, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", 9002))
 	if err != nil {
 		panic(err)
