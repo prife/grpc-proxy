@@ -1,0 +1,2147 @@
+syntax = "proto3";
+
+package com.perfdog.proto;
+option java_multiple_files = true;
+option go_package = "/perfdog";
+
+message OptionalInt {
+    int32 value = 1;
+}
+
+message OptionalInt64 {
+    int64 value = 1;
+}
+
+message OptionalFloat {
+    float value = 1;
+}
+
+message OptionalDouble {
+    double value = 1;
+}
+
+message OptionBool {
+    bool value = 1;
+}
+
+message Empty {
+}
+
+message Token {
+    string token = 1;
+}
+
+message UserInfo {
+    string name = 1; // 名字, name
+    string pic = 2; // 头像url, avatar url
+    string email = 3; // 邮箱, email
+    string id = 4; // 用户id, user id
+}
+
+enum DEVICE_EVENTTYPE {
+    ADD = 0; // 添加设备, add device
+    REMOVE = 1; // 移除设备, remove device
+    NOTIFY = 2; // 其它通知, other notification
+}
+
+enum DEVICE_OSTYPE {
+    ANDROID = 0; // Android设备, Android device
+    IOS = 1; // iOS设备, iOS device
+    SWITCH = 2; // Switch设备, Switch device
+    WINDOWS = 3; // Windows设备, Windows device
+    PLAYSTATION = 4; // PS5设备, PS5 device
+    XBOX = 5;
+    HARMONY = 6; // 鸿蒙设置, Harmony device
+}
+
+enum DEVICE_CONTYPE {
+    USB = 0; // usb连接, usb
+    WIFI = 1; // wifi连接, wifi
+}
+
+enum DEVICE_ACCESS_TYPE {
+    LOCAL = 0;
+    REMOTE_REACHABLE = 1;
+    REMOTE_UNREACHABLE = 2;
+}
+
+message Device {
+    DEVICE_OSTYPE osType = 1; // 设备系统类型, device os type
+    DEVICE_CONTYPE conType = 2; // 设备连接类型, device connection type
+    string uid = 3; // 设备uid, device uid
+    string name = 4; //设备名字, device name
+    DEVICE_ACCESS_TYPE accessType = 5;
+}
+
+message GetPasswordRequest {
+}
+
+message DeviceMessage
+{
+    oneof value {
+        GetPasswordRequest getPasswordRequest = 1;
+    }
+}
+
+message DeviceEvent {
+    DEVICE_EVENTTYPE eventType = 1; // 事件类型, event type
+    Device device = 2; // 设备标识, device
+    DeviceMessage deviceMessage = 3;
+}
+
+message LaunchAsCollectorEvent {
+}
+
+message StartRecordEvent {
+}
+
+message AddLabelEvent {
+}
+
+message GetResolutionEvent {
+}
+
+message GlobalEvent {
+    oneof event {
+        LaunchAsCollectorEvent launchAsCollectorEvent = 1;
+        StartRecordEvent startRecordEvent = 2;
+        AddLabelEvent addLabelEvent = 3;
+        GetResolutionEvent getResolutionEvent = 4;
+    }
+}
+
+message DeviceInfo {
+    map<string, string> value = 1; // 设备信息map, map of device information
+}
+
+message DeviceStatus {
+    bool isValid = 1; //false的时候设备需要初始化, The device needs to be initialized when false
+    bool isTesting = 2; //是否在测试中, Whether or not it is in testing
+    bool isPerfDogAppInstalled = 3; //android上PerfDog App是否安装成功, Is the PerfDog App installed successfully on android?
+    bool isInstallFailedUserRestricted = 4;
+    bool isDevAppTestSupported = 5; // ios
+}
+
+message AppInfo {
+    string label = 1; // APP名称, name
+    string packageName = 2; // APP包名, package name
+    string version = 3; // APP Version
+    repeated string processList = 4; // APP进程列表, process list
+    bytes icon = 5; // APP Icon, PNG格式, app icon of png format
+    bool isSystemApp = 6; // 是否系统应用, Whether it is a system application
+    string subVersion = 7; // APP子版本号,android上为versionCode,ios上为CFBundleVersion(XCode里的build), APP sub version number, on android is versionCode, on ios is CFBundleVersion (build in XCode).
+    bool debuggable = 8; // APP是否可调试,android上为android:debuggable属性, Whether the app is debuggable or not, on android is the android:debuggable property.
+    map<string, string> extra = 9; // //android上存app的<meta-data>数据, Storing app <meta-data> data on android
+}
+
+message AppList {
+    repeated AppInfo app = 1; // APP列表, app list
+}
+
+enum PerfDataType {
+    DATAID_NONE = 0;
+    CPU_USAGE = 1;
+    GPU_USAGE = 2;
+    GPU_FREQ = 3;
+    FPS = 4;
+    NETWORK_USAGE = 5;
+    ANDROID_MEMORY_DETAIL = 6;
+    MEMORY = 7;
+    BATTERY = 8;
+    CPU_TEMPERATURE = 9;
+    FRAME_TIME = 10;
+    CTX_SWITCH = 11;
+    WAKEUP = 12;
+    SCREEN_SHOT = 13;
+    SYSTEM_LOG = 14;
+    CORE_FREQUENCY = 15;
+    CORE_USAGE = 16;
+    IOS_GPU_USAGE = 17;
+    IOS_ENERGY_USAGE = 18;
+    BATTERY_TEMPERATURE = 19;
+    NORMALIZED_CPU_USAGE = 20;
+    NORMALIZED_CPU_CORE_USAGE = 21;
+    GPU_COUNTER_BASICS = 22; // removed, use DynamicPerfDataDesc instead
+    GPU_COUNTER_MEMORY = 23; // removed, use DynamicPerfDataDesc instead
+    GPU_COUNTER_SHADER = 24; // removed, use DynamicPerfDataDesc instead
+    DEVICE_NETWORK_USAGE = 25;
+    SWITCH_MEMORY = 26;
+    UNITY_MONO_HEAP = 27;
+    THREAD_CPU_USAGE = 28;
+    APP_STARTUP_TIME = 29;
+    SCREEN_BRIGHTNESS = 30;
+    BATTERY_LEVEL = 31;
+    CPU_THROTTLING = 32;
+    FRAME_GENERATION = 33;
+
+    WINDOWS_CPU = 100;
+    WINDOWS_MEMORY = 101;
+    WINDOWS_IO = 102;
+    WINDOWS_THREAD_COUNT = 103;
+    WINDOWS_HANDLE_COUNT = 104;
+    WINDOWS_GPU = 105;
+    WINDOWS_GRAPHICS = 106;
+    WINDOWS_GPU_MEMORY = 107;
+    WINDOWS_NVIDIA_GPU_USAGE = 108;
+    WINDOWS_SYSTEM_CPU_CLOCK = 109;
+    WINDOWS_DISK_USAGE = 110;
+    WINDOWS_AMD_GPU_USAGE = 111;
+    WINDOWS_TREE_CPU = 112;
+}
+
+message EnablePerfDataTypeReq {
+    Device device = 1;
+    PerfDataType type = 2;
+    DynamicPerfDataDesc dynamicData = 3;
+}
+
+message DisablePerfDataTypeReq {
+    Device device = 1;
+    PerfDataType type = 2;
+    DynamicPerfDataDesc dynamicData = 3;
+}
+
+enum DynamicPerfDataType
+{
+    GPU_COUNTER = 0;
+    PLAY_STATION = 1;
+    XBOX_DATA = 2;
+    UNDEFINED = 3;
+}
+
+message DynamicPerfDataKeyInfo
+{
+    string key = 1;
+    string description = 2;
+    string unit = 3;
+}
+
+message DynamicPerfDataDesc
+{
+    DynamicPerfDataType type = 1;
+    string category = 2;
+    string description = 3;
+    repeated DynamicPerfDataKeyInfo key = 4;
+    int32 group = 5;
+}
+
+message DynamicPerfData
+{
+    int64 time = 1;
+    int64 absTime = 2;
+    string category = 3;
+    string key = 4;
+    Value value = 5;
+    string unit = 6;
+    OptionalInt sampleCount = 7;
+    int32 group = 8;
+    DynamicPerfDataType type = 9;
+}
+
+message DynamicDataList
+{
+    repeated DynamicPerfData dynamicData = 1;
+    repeated DynamicPerfDataDesc dynamicInfo = 2;
+}
+
+message SystraceCategory {
+    string name = 1;
+    string description = 2;
+}
+
+message PerfDataTypeRet {
+    repeated PerfDataType type = 1;
+    repeated DynamicPerfDataDesc dynamicDataDesc = 2;
+    repeated SystraceCategory systraceCategories = 3;
+}
+
+message ScreenShotInterval {
+    Device device = 1;
+    int32 second = 2;
+}
+
+enum ProfilingMode {
+    DEFAULT = 0;
+    SYSTEM = 1;
+    UNREAL = 2;
+    UNITY = 3;
+    NETWORK = 4;
+}
+
+message DelayBias {
+    int32 delayBiasMin = 1;//延时抖动范围的下区间,单位毫秒, Lower range of delay jitter, in milliseconds
+    int32 delayBiasMax = 2;//延时抖动范围的上区间,单位毫秒, Upper interval of the delay jitter range, in milliseconds
+    int32 delayBiasPercent = 3;//延时抖动的概率1-100%, Probability of delayed jitter 1-100%
+}
+
+enum NetworkProtocol {
+    NONE = 0;
+    TCP = 1;
+    UDP = 2;
+    DNS = 4;
+    ICMP = 8;
+}
+
+message NetworkProfilingScene {
+    string client = 1;
+    string server = 2;
+    string operator = 3;//运营商, network operator
+    string network = 4;//网络类型, network type
+    int32 ping = 5;
+    int32 pingVariance = 6;
+    double lossRate = 7;
+    int64 dataUpdateTime = 8;//地址网络数据的更新时间, Address network data update time
+    int32 sceneId = 9;
+    string sceneName = 10;
+}
+
+message NetworkProfilingOption {
+    OptionalInt duration = 1;//模板持续时间, Template Duration
+    OptionalInt outBandwidth = 2;//上行带宽,单位kbps, UpStream bandwidth, in kbps
+    OptionalInt outDelay = 3;//上行延时,单位毫秒, Uplink delay, in milliseconds
+    repeated DelayBias outDelayBias = 4;//上行延时抖动, Uplink delay jitter
+    OptionalInt outRate = 5;//上行随机丢包,1-100整型, Uplink random packet loss, integer 1-100
+    OptionalInt outPass = 6;//上行周期性设置（正常放行）,单位毫秒, Uplink periodicity setting (normal release), in milliseconds
+    OptionalInt outLoss = 7;//上行周期性设置（完全丢包）,单位毫秒, Uplink periodicity setting (complete packet loss), in milliseconds
+    OptionalInt outBurst = 8;//上行周期性设置（时间点放行）,单位毫秒, Uplink periodicity setting (point-in-time release), in milliseconds
+
+    OptionalInt inBandwidth = 9;//下行带宽,单位kbps, Downlink bandwidth, in kbps
+    OptionalInt inDelay = 10;//下行延时,单位毫秒, Downlink delay, in milliseconds
+    repeated DelayBias inDelayBias = 11;//下行延时抖动, Downlink delay jitter
+    OptionalInt inRate = 12;//下行随机丢包,1-100整型, Downlink random packet loss, integer 1-100
+    OptionalInt inPass = 13;//下行周期性设置（正常放行）,单位毫秒, Downlink periodicity setting (normal release), in milliseconds
+    OptionalInt inLoss = 14;//下行周期性设置（完全丢包）,单位毫秒, Downlink periodicity setting (complete packet loss), in milliseconds
+    OptionalInt inBurst = 15;//下行周期性设置（时间点放行）,单位毫秒, Downlink periodicity setting (point-in-time release), in milliseconds
+
+    repeated NetworkProtocol affectedProtocol = 16;//应用弱网模拟的协议,不在列表里的协议会直接通过, All protocols affected by weak network simulation. If it is not in the list, it will be passed directly.
+    repeated string ipList = 17;//指定生效弱网的IP, Specify the IP of the weak network that takes effect
+}
+
+message NetworkProfilingTemplate {
+    int32 id = 1;
+    string name = 2;
+    string description = 3;
+    bool recommended = 4;
+    NetworkProfilingScene sceneInfo = 5;
+    repeated NetworkProfilingOption networkProfilingOptions = 6;
+}
+
+message NetworkStartTestOption
+{
+    bool enableHttpsDecrypt = 1;
+    bool doNotRestartTestedApp = 2; //目前仅网络模式生效.为true时不重新拉起被测APP, It Currently only takes effect on the network mode. When true, the APP under test will not be relaunched.
+    bool enableAdaptiveDelay = 3;//开启后设置的延迟值会减去主ip的延迟, The delay value set after turning on will subtract the delay of the main IP.
+}
+
+message SystraceStartTestOption
+{
+    repeated SystraceCategory systraceCategories = 1;
+}
+
+message StartTestAppReq {
+    Device device = 1;
+    AppInfo app = 2; // 需要测试的APP, tested app
+    string subProcess = 3; // 需要测试的子进程(只适用于Android, iOS无需填写), The child process being tested (only applicable to Android, no need to fill in for iOS)
+    bool hideFloatingWindow = 4; // 手机上是否不显示悬浮窗(只适用于Android),优先级比setFloatingWindowPreferences高, Whether the floating window is not displayed on the mobile phone (only applicable to Android), the priority is higher than setFloatingWindowPreferences
+    string subWindow = 5; // 指定测试fps的窗口名字, Specify the window name for testing fps
+    ProfilingMode profilingMode = 7; // 针对可调试的应用获取更深度的信息, Get deeper information for debuggable apps
+    NetworkProfilingTemplate networkProfilingTemplate = 8;
+    NetworkStartTestOption networkOption = 9;
+    SystraceStartTestOption systraceOption = 10;
+}
+
+message StartTestSysProcessReq {
+    Device device = 1;
+    SysProcessInfo sysProcessInfo = 2;
+    bool hideFloatingWindow = 3; // 手机上是否不显示悬浮窗(只适用于Android),优先级比setFloatingWindowPreferences高, Whether the floating window is not displayed on the mobile phone (only applicable to Android), the priority is higher than setFloatingWindowPreferences
+    DXVersion dxVersion = 8; //只适用于Window,指定要测试的dx版本, Applies to Window only, specifies the dx version to test
+    ProfilingMode profilingMode = 9; // 获取更深度的信息, Get more in-depth information
+    SystraceStartTestOption systraceOption = 10;
+}
+
+message StartTestRet {
+    int32 ret = 1;
+}
+
+message OpenPerfDataStreamReq {
+    Device device = 1;
+}
+
+message StopTestReq {
+    Device device = 1;
+}
+
+message FrameTime {
+    int64 time = 1;
+    int64 absTime = 2;
+    double frameTime = 3;
+    bool isInterFrame = 4;
+}
+
+message FpsData {
+    int64 time = 1;
+    int64 absTime = 2;
+    double fps = 3;
+    string label = 4;
+    string note = 5;
+    OptionalDouble InterFrame = 6; // 只有android手机有, Only for android phones
+    OptionalDouble visualFps = 7;
+}
+
+message FrameTimeData {
+    repeated FrameTime frameTime = 1;
+}
+
+message JankData {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 jank = 3;
+    int32 bigJank = 4;
+    double stutter = 5;
+    int32 smallJank = 6;
+    double frameStability = 7;
+    OptionalDouble onePercentLowFrame = 8;
+}
+
+message AndroidGpuUsageData {
+    int64 time = 1;
+    int64 absTime = 2;
+    double gpuUsage = 3;
+}
+
+message IosGpuUsageData {
+    int64 time = 1;
+    int64 absTime = 2;
+    float renderUsage = 3;
+    float tilerUsage = 4;
+    float deviceUsage = 5;
+}
+
+message GpuFreqData {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 gpuFreq = 3;
+}
+
+message AndroidMemData {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 pss = 3;
+    int32 swap = 4;
+    int32 virtualMemory = 5;
+    int32 availableMemory = 6;
+}
+
+message AndroidMemDetailData {
+    int64 time = 1;
+    int64 absTime = 2;
+    double nativePss = 3;
+    double gfx = 4;
+    double gl = 5;
+    double unknown = 6;
+    double javaHeap = 7;
+    double dalvikHeap = 8;
+    OptionalDouble dalvikOther = 9;
+    OptionalDouble stack = 10;
+    OptionalDouble cursor = 11;
+    OptionalDouble ashmem = 12;
+    OptionalDouble otherDev = 13;
+    OptionalDouble soMmap = 14;
+    OptionalDouble jarMmap = 15;
+    OptionalDouble apkMmap = 16;
+    OptionalDouble ttfMmap = 17;
+    OptionalDouble dexMmap = 18;
+    OptionalDouble codeMmap = 19;
+    OptionalDouble imageMmap = 20;
+    OptionalDouble otherMmap = 21;
+    OptionalDouble graphics = 22;
+    OptionalDouble memtrack = 23;
+    OptionalDouble oatMmap = 24;
+    OptionalDouble artMmap = 25;
+    OptionalDouble eglMtrack = 26;
+    OptionalDouble otherMtrack = 27;
+    OptionalDouble totalSwapPss = 28;
+}
+
+message Ios10MemData {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 realMemory = 3;
+    int32 virtualMemory = 4;
+    int32 availableMemory = 5;
+}
+
+message Ios11MemData {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 xcodeMemory = 3;
+    int32 realMemory = 4;
+    int32 memory = 5;
+    int32 virtualMemory = 6;
+    int32 availableMemory = 7;
+}
+
+message CoreUsageData {
+    int64 time = 1;
+    int64 absTime = 2;
+    repeated float coreUsage = 3;
+}
+
+message CpuFreqData {
+    int64 time = 1;
+    int64 absTime = 2;
+    repeated int32 cpuFreq = 3;
+}
+
+message CpuUsageData {
+    int64 time = 1;
+    int64 absTime = 2;
+    double appUsage = 3;
+    double totalUsage = 4;
+}
+
+message CpuTempData {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 temp = 3;
+}
+
+message BatteryTempData {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 temp = 3;
+}
+
+message GpuTempData {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 temp = 3;
+}
+
+message NpuTempData {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 temp = 3;
+}
+
+message CtxSwitchData {
+    int64 time = 1;
+    int64 absTime = 2;
+    int64 ctxSwitch = 3;
+}
+
+message WakeupsData {
+    int64 time = 1;
+    int64 absTime = 2;
+    int64 wakeups = 3;
+}
+
+message BatteryData {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 current = 3;
+    int32 voltage = 4;
+    int32 power = 5;
+}
+
+message NetworkData {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 upload = 3;
+    int32 download = 4;
+}
+
+message SyslogData {
+    string log = 1;
+}
+
+message ScreenShotData {
+    int64 time = 1;
+    int64 absTime = 2;
+    bytes data = 3;
+}
+
+message WarningData {
+    string msg = 1;
+}
+
+message ErrorData {
+    string msg = 1;
+}
+
+message MaliGpuCounterBasic {
+    int64 time = 1;
+    int64 absTime = 2;
+    OptionalFloat nonFragmentUtilization = 3;
+    OptionalFloat fragmentUtilization = 4;
+    OptionalFloat tilerUtilization = 5;
+    OptionalFloat gpuActiveCycle = 6;
+}
+
+message MaliGpuCounterShader {
+    int64 time = 1;
+    int64 absTime = 2;
+    OptionalFloat overDraw = 3;
+    OptionalFloat pixelThroughput = 4;
+    OptionalInt64 nonFragmentWarps = 5;
+    OptionalInt64 fragmentWarps = 6;
+}
+
+message MaliGpuCounterMemory {
+    int64 time = 1;
+    int64 absTime = 2;
+    OptionalInt l2LoadStoreRead = 3;
+    OptionalInt l2TextureRead = 4;
+    OptionalInt busRead = 5;
+    OptionalInt busWrite = 6;
+}
+
+message QComGpuCounterBasic {
+    int64 time = 1;
+    int64 absTime = 2;
+    OptionalFloat gpuUtilization = 3;
+    OptionalFloat gpuBusBusy = 4;
+    OptionalFloat shadersBusy = 5;
+    OptionalInt64 preClippedPolygonsPerSecond = 6;
+}
+
+message QComGpuCounterMemory {
+    int64 time = 1;
+    int64 absTime = 2;
+    OptionalInt readTotal = 3;
+    OptionalInt writeTotal = 4;
+    OptionalFloat textureL2Miss = 5;
+    OptionalFloat stalledOnSystemMemory = 6;
+}
+
+message QComGpuCounterShader {
+    int64 time = 1;
+    int64 absTime = 2;
+    OptionalInt64 verticesShadedPerSecond = 3;
+    OptionalInt64 fragmentsShadedPerSecond = 4;
+}
+
+message PVRGpuCounterBasic {
+    int64 time = 1;
+    int64 absTime = 2;
+    OptionalFloat rendererActive = 3;
+    OptionalFloat tilerActive = 4;
+    OptionalFloat hsrEfficiency = 5;
+    OptionalFloat spmActive = 6;
+}
+
+message PVRGpuCounterMemory {
+    int64 time = 1;
+    int64 absTime = 2;
+    OptionalInt gpuMemoryReadRate = 3;
+    OptionalInt gpuMemoryWriteRate = 4;
+    OptionalInt gpuMemoryTotalRate = 5;
+    OptionalFloat gpuMemoryInterfaceLoad = 6;
+}
+
+message PVRGpuCounterShader {
+    int64 time = 1;
+    int64 absTime = 2;
+    OptionalInt64 shadedVerticesPerSecond = 3;
+    OptionalInt64 shadedPixelsPerSecond = 4;
+    OptionalFloat overDraw = 5;
+}
+
+message IosGPUCounterBasics {
+    int64 time = 1;
+    int64 absTime = 2;
+    OptionalDouble totalOccupancy = 3;
+    OptionalDouble vertexOccupancy = 4;
+    OptionalDouble fragmentOccupancy = 5;
+    OptionalDouble computeOccupancy = 6;
+}
+
+message IosGPUCounterMemory {
+    int64 time = 1;
+    int64 absTime = 2;
+    OptionalDouble bufferReadLimiter = 3;
+    OptionalDouble bufferLoadUtilization = 4;
+    OptionalDouble textureSampleLimiter = 5;
+    OptionalDouble textureSampleUtilization = 6;
+    OptionalDouble gpuReadBandwidth = 7;
+    OptionalDouble gpuWriteBandwidth = 8;
+}
+
+message IosGPUCounterShader {
+    int64 time = 1;
+    int64 absTime = 2;
+    OptionalDouble aluLimiter = 3;
+    OptionalDouble aluUtilization = 4;
+    OptionalDouble f32Utilization = 5;
+    OptionalDouble f16Utilization = 6;
+}
+
+message IosGPUCounterSampleCount {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 value = 3;
+}
+
+message SwitchMemData {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 totalAvailableMemorySize = 3;
+    int32 totalUsedMemorySize = 4;
+    int32 totalMemoryHeapSize = 5;
+    int32 allocatedMemoryHeapSize = 6;
+    int32 programSize = 7;
+    int32 totalThreadStackSize = 8;
+    int32 threadCount = 9;
+}
+
+message UnityMonoHeapData {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 monoHeapReservedSize = 3;
+    int32 monoHeapUsedSize = 4;
+}
+
+message WindowsCpuUsage {
+    int64 time = 1;
+    int64 absTime = 2;
+    float appUsage = 3;
+    float appUserUsage = 4;
+    float appKernelUsage = 5;
+}
+
+message WindowsRender {
+    int64 time = 1;
+    int64 absTime = 2;
+    double drawCall = 3;
+    double primitiveCount = 4;
+}
+
+message WindowsRenderData {
+    repeated WindowsRender render = 1;
+}
+
+message WindowsMemoryUsage {
+    int64 time = 1;
+    int64 absTime = 2;
+    double workingSet = 3;
+    double privateBytes = 4;
+    double virtualBytes = 5;
+    double systemAvailableMemory = 6;
+    double pageFaults = 7;
+}
+
+message WindowsIOUsage {
+    int64 time = 1;
+    int64 absTime = 2;
+    double readOperationCount = 3;
+    double readBytes = 4;
+    double writeOperationCount = 5;
+    double writeBytes = 6;
+}
+
+message WindowsThread {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 threadCount = 3;
+}
+
+message WindowsHandle {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 handleCount = 3;
+}
+
+enum USAGE_TYPE {
+    PROCESS_USAGE = 0;
+    SYSTEM_USAGE = 1;
+}
+
+message GpuGraphicsUsage {
+    string engineName = 1;
+    USAGE_TYPE usageType = 2;
+    OptionalDouble usage = 3;
+}
+
+message WindowsGpuUsage {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 gpuIndex = 3;
+    OptionalDouble temperature = 4;
+    OptionalDouble appGUsage3D = 5;
+    OptionalDouble totalGUsage3D = 6;
+    repeated GpuGraphicsUsage gpuGraphicsUsage = 7;
+}
+
+message WindowsPerfTypeNtf {
+    repeated PerfDataType dataType = 1;
+}
+
+message WindowsGpuMemoryUsage {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 gpuIndex = 3;
+    OptionalDouble appDedicated = 4;
+    OptionalDouble appShared = 5;
+    OptionalDouble dedicated = 6;
+    OptionalDouble shared = 7;
+}
+
+message NvidiaGpuUsage {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 gpuIndex = 3;
+    OptionalInt64 usedMemory = 4;
+    OptionalInt usage = 5;
+    OptionalInt temp = 6;
+    OptionalInt64 freq = 7;
+}
+
+message AmdGpuUsage {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 gpuIndex = 3;
+    OptionalInt64 usedMemory = 4;
+    OptionalDouble usage = 5;
+    OptionalDouble temp = 6;
+    OptionalInt64 freq = 7;
+    OptionalInt64 usedMemoryFreq = 8;
+}
+
+message WindowsCpuFreq {
+    int64 time = 1;
+    int64 absTime = 2;
+    double freq = 3;
+}
+
+message WindowsCpuCoreFreq {
+    int64 time = 1;
+    int64 absTime = 2;
+    repeated double cpuFreq = 3;
+}
+
+message WindowsCpuCoreUsage {
+
+}
+
+message WindowsDiskUsage {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 diskNumber = 3;
+    double processReadSpeed = 4;
+    double processWriteSpeed = 5;
+    int64 queueLength = 6;
+}
+
+message Frame {
+    int32 frameIndex = 1;
+    int64 startTimeNS = 2;
+    int64 duration = 3;
+}
+
+message Value {
+    oneof kind {
+        int64 longValue = 1;
+        double doubleValue = 2;
+        string stringValue = 3;
+        bytes blob = 4;
+    }
+}
+
+message ListValue {
+    repeated Value values = 1;
+}
+
+message PerFrameData {
+    int32 frameIndex = 1;
+    int32 id = 2;
+    string name = 3;
+    Value value = 4;
+}
+
+message ThreadInfo {
+    int32 tid = 1;
+    string name = 2;
+    int32 priority = 3;
+    int32 pid = 4;
+}
+
+message DeepProfilingProcessInfo {
+    int32 pid = 1;
+    string name = 2;//进程名, process name
+    string cmdline = 3;//完整的启动参数, Complete startup parameters
+    int32 priority = 4;//显示优先级, priority of display
+}
+
+message ThreadStateExtraInfo {
+    int32 tid = 1;
+    int32 pid = 2;
+}
+
+message RunningStateExtraInfo {
+    int32 cpuId = 1;
+}
+
+message BinderSession
+{
+    message Session
+    {
+        int32 key = 1;
+        int32 sendPid = 2;
+        int32 sendTid = 3;
+        int64 sendSliceStartTime = 4;
+        int64 sendSliceEndTime = 5;
+
+        int32 receivePid = 6;
+        int32 receiveTid = 7;
+        int64 receiveSliceStartTime = 8;
+        int64 receiveSliceEndTime = 9;
+    }
+    repeated Session sessions = 1;
+}
+
+enum BinderTransactionType {
+    BINDER_NONE = 0;
+    BINDER_SEND = 1;
+    BINDER_RECEIVE = 2;
+}
+
+message BinderTransactionInfo {
+    int32 key = 1;//对应BinderSession里的key, Corresponds to the key in BinderSession
+    BinderTransactionType type = 2;
+    int32 flags = 3;//如果(flags & 0x1)>0,表示这是个异步binder调用, If (flags & 0x1)>0, it means this is an asynchronous binder call
+    int32 code = 4;
+}
+
+message Metadata
+{
+    string key = 1;
+    Value value = 2;
+}
+
+message MetadataList
+{
+    repeated Metadata values = 1;
+}
+
+message SliceExtraInfo {
+    ThreadStateExtraInfo threadStateExtraInfo = 1;
+    BinderTransactionInfo binderTransactionInfo = 2;
+    MetadataList metadataList = 3;
+    RunningStateExtraInfo runningStateExtraInfo = 4;
+}
+
+message Slice {
+    int64 startTimeNS = 1;
+    int64 duration = 2;
+    string name = 3;
+    int32 level = 4;
+    SliceExtraInfo extraInfo = 5;
+}
+
+message ThreadFlameData {
+    int32 tid = 1;
+    repeated Slice slice = 2;
+    int32 pid = 3;
+}
+
+message ThreadScheduleData {
+    int32 tid = 1;
+    repeated Slice slice = 2;
+    int32 pid = 3;
+}
+
+message CpuScheduleData {
+    int32 cpuId = 1;
+    repeated Slice slice = 2;
+}
+
+message CounterValue {
+    int64 time = 1;
+    Value value = 2;
+}
+
+enum CounterType {
+    FTRACE = 0;
+    PERFDOG = 1;
+    VSYNC = 2;
+}
+
+message DeepProfilingCounterData {
+    int32 pid = 1;
+    string counterName = 2;
+    int32 priority = 3;//显示优先级, priority of display
+    string unit = 4;
+    repeated CounterValue values = 5;
+    CounterType counterType = 6;
+}
+
+//Asynchronous events that start and end in different threads
+//开始和结束不在同一个线程的异步事件
+message DeepProfilingAsyncEvent {
+    int32 pid = 1;
+    string eventName = 2;
+    int32 priority = 3;//显示优先级, priority of display
+    repeated Slice slice = 4;
+}
+
+message DeepProfilingData {
+    oneof value {
+        Frame frame = 1;
+        PerFrameData perFrameData = 2;
+        ThreadInfo threadInfo = 3;
+        ThreadFlameData threadFlameData = 4;
+        ThreadScheduleData threadScheduleData = 5;
+        CpuScheduleData cpuScheduleData = 6;
+        DeepProfilingProcessInfo processInfo = 7;
+        DeepProfilingCounterData counterData = 8;
+        DeepProfilingAsyncEvent asyncEvent = 9;
+        BinderSession binderSession = 10;
+    }
+}
+
+message PerFramePowerConsumption {
+    int64 time = 1;
+    int64 absTime = 2;
+    double avgPerFramePowerConsumption = 3;
+}
+
+message CustomData {
+    int64 time = 1;
+    int64 absTime = 2;
+    string category = 3;
+    string key = 4;
+    ListValue listValues = 5;
+}
+
+message AddNoteNtf
+{
+    int64 time = 1;
+    string name = 2;
+}
+
+message SetLabelNtf
+{
+    int64 time = 1;
+    string name = 2;
+}
+
+message CustomDataList {
+    repeated CustomData values = 1;
+    AddNoteNtf addNoteNtf = 2;
+    SetLabelNtf setLabelNtf = 3;
+}
+
+enum NetworkWarningType {
+    WARNING_NONE = 0;
+    WARNING_TLS = 1;
+    WARNING_TCP_CONNECT = 2;
+    WARNING_DNS = 3;
+    WARNING_READ = 4;
+}
+
+message NetworkWarning {
+    int64 time = 1;
+    int64 absTime = 2;
+    NetworkWarningType type = 3;
+    string description = 4;
+}
+
+message TcpConnectionCount {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 count = 3;
+}
+
+message TrafficStatistics {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 uploadBytes = 3;
+    int32 downloadBytes = 4;
+    int32 uploadPackets = 5;
+    int32 downloadPackets = 6;
+}
+
+message ServerLatency {
+    int64 time = 1;
+    int64 absTime = 2;
+    string ip = 3;
+    int32 latency = 4;
+    string hostName = 5;
+}
+
+message TcpRetransmissionItem {
+    string localIp = 1;
+    int32 localPort = 2;
+    string remoteIp = 3;
+    int32 remotePort = 4;
+    int32 retransmissionCount = 5;
+    string remoteHostName = 6;
+}
+
+message TcpRetransmission {
+    int64 time = 1;
+    int64 absTime = 2;
+    repeated TcpRetransmissionItem tcpRetransmissionItem = 3;
+}
+
+message TcpPacketDetail {
+    int64 time = 1;
+    int64 absTime = 2;
+    string localIp = 3;
+    int32 localPort = 4;
+    string remoteIp = 5;
+    int32 remotePort = 6;
+    int32 len = 7;
+}
+
+message UdpPacketDetail {
+    int64 time = 1;
+    int64 absTime = 2;
+    string localIp = 3;
+    int32 localPort = 4;
+    string remoteIp = 5;
+    int32 remotePort = 6;
+    int32 len = 7;
+}
+
+message DnsQuestion {
+    string name = 1;
+    string type = 2;
+    string class = 3;
+}
+
+message DnsAnswer {
+    string name = 1;
+    string type = 2;
+    string class = 3;
+    string data = 4;
+}
+
+message DnsPacketDetail {
+    int64 time = 1;
+    int64 absTime = 2;
+    string localIp = 3;
+    int32 localPort = 4;
+    string remoteIp = 5;
+    int32 remotePort = 6;
+    NetworkProtocol protocol = 7;
+    repeated DnsQuestion questions = 8;
+    repeated DnsAnswer answers = 9;
+    int32 responseCode = 10;
+    string description = 11;
+    int64 dnsLookupTime = 12;
+}
+
+message IcmpPacketDetail {
+    int64 time = 1;
+    int64 absTime = 2;
+    string localIp = 3;
+    string remoteIp = 4;
+    int32 type = 5;
+    int32 code = 6;
+    int32 len = 7;
+}
+
+message PacketDetailItem {
+    oneof value {
+        TcpPacketDetail tcpPacketDetail = 1;
+        UdpPacketDetail udpPacketDetail = 2;
+        DnsPacketDetail dnsPacketDetail = 3;
+        IcmpPacketDetail icmpPacketDetail = 4;
+    }
+}
+
+message PacketDetail {
+    repeated PacketDetailItem packetDetailItem = 1;
+}
+
+message RawIpPacket {
+    int64 time = 1;
+    int64 absTime = 2;
+    bytes ipPacket = 3;
+}
+
+message TlsAlert {
+    int64 time = 1;
+    int64 absTime = 2;
+    bytes ip = 3;
+    string domain = 4;
+    string tlsVersion = 5;
+    int32 alertLevel = 6;
+    int32 alertCode = 7;
+}
+
+message TlsHandshakeComplete {
+    int64 time = 1;
+    int64 absTime = 2;
+    int64 duration = 3;
+    bytes ip = 4;
+    string domain = 5;
+    string tlsVersion = 6;
+}
+
+message HttpRequest {
+    int64 time = 1;
+    int64 absTime = 2;
+    int64 duration = 3;
+    bytes ip = 4;
+    string domain = 5;
+    string requestHeader = 6;
+    string respondHeader = 7;
+}
+
+message IpTraffic {
+    string ip = 1;
+    int32 uploadBytes = 2;
+    int32 downloadBytes = 3;
+    int32 uploadPackets = 4;
+    int32 downloadPackets = 5;
+}
+
+message IpTrafficStatistics {
+    int64 time = 1;
+    int64 absTime = 2;
+    repeated IpTraffic ipTraffics = 3;
+}
+
+message NetworkProfilingData {
+    oneof value {
+        NetworkWarning networkWarning = 1;
+        TcpConnectionCount tcpConnectionCount = 2;
+        TrafficStatistics trafficStatistics = 3;
+        ServerLatency serverLatency = 4;
+        TcpRetransmission tcpRetransmission = 5;
+        PacketDetail PacketDetail = 6;
+        RawIpPacket RawIpPacket = 7;
+        TlsAlert tlsAlert = 8;
+        TlsHandshakeComplete tlsHandshakeComplete = 9;
+        HttpRequest httpRequest = 10;
+        IpTrafficStatistics ipTrafficStatistics = 11;
+    }
+}
+
+message ThreadCpuUsage {
+    int32 tid = 1;
+    string threadName = 2;
+    double usage = 3;
+}
+
+message ThreadCpuUsageList {
+    int64 time = 1;
+    int64 absTime = 2;
+    repeated ThreadCpuUsage threadUsage = 3;
+}
+
+//The time of each clock at the same moment can be used to convert the absTime of the data into the time of other clocks
+//同一时刻各个时钟的时间,可以用来将数据的absTime转成其他时钟的时间
+message ClockSnapshot {
+    int64 clockOfData = 1;//absTime对应的时钟,ns, The clock corresponding to absTime, ns
+    int64 clockMonotonic = 2;//CLOCK_MONOTONIC,ns
+}
+
+//The time it takes for the APP to display the first frame
+//APP启动到首屏的时间
+message AppLaunchingTime {
+    string componentName = 1;
+    int32 timeMs = 2;
+}
+
+//The time from when the APP starts to when the user calls Activity.reportFullyDrawn()
+//APP启动到用户调用Activity.reportFullyDrawn()的时间
+message AppFullyDrawnTime {
+    string componentName = 1;
+    int32 timeMs = 2;
+}
+
+message ScreenBrightness {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 value = 3;
+}
+
+message BatteryLevel {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 percentage = 3;
+}
+
+message TestingInfo {
+    oneof value {
+        string taskName = 1;
+        string processName = 2;
+    }
+}
+
+message CpuThrottlingData {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 core = 3;
+    int32 scalingMaxFreq = 4;
+    double percentage = 5;
+}
+
+message FrameGeneration {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 differFrame = 3;
+    int32 repeatFrame = 4;
+}
+
+message AndroidPerfData {
+    oneof value {
+        FpsData fpsData = 1;
+        FrameTimeData frameTimeData = 2;
+        JankData jankData = 3;
+        AndroidGpuUsageData androidGpuUsageData = 4;
+        GpuFreqData gpuFreqData = 5;
+        AndroidMemData androidMemData = 6;
+        //AndroidMemDetailData androidMemDetailData = 7;
+        CoreUsageData coreUsageData = 8;
+        CpuFreqData cpuFreqData = 9;
+        CpuUsageData cpuUsageData = 10;
+        CpuTempData cpuTempData = 11;
+        BatteryData batteryData = 12;
+        NetworkData networkData = 13;
+        SyslogData syslogData = 14;
+        ScreenShotData screenShotData = 15;
+        CpuUsageData normalizedCpuUsageData = 16;
+        CoreUsageData normalizedCpuCoreUsageData = 17;
+        MaliGpuCounterBasic maliGpuCounterBasic = 18;
+        MaliGpuCounterShader maliGpuCounterShader = 19;
+        MaliGpuCounterMemory maliGpuCounterMemory = 20;
+        QComGpuCounterBasic qcomGpuCounterBasic = 21;
+        QComGpuCounterMemory qcomGpuCounterMemory = 22;
+        QComGpuCounterShader qcomGpuCounterShader = 23;
+        PVRGpuCounterBasic pvrGpuCounterBasic = 24;
+        PVRGpuCounterMemory pvrGpuCounterMemory = 25;
+        PVRGpuCounterShader pvrGpuCounterShader = 26;
+        PerFramePowerConsumption perFramePowerConsumption = 28;
+        BatteryTempData batteryTempData = 29;
+        GpuTempData gpuTempData = 30;
+        NpuTempData npuTempData = 31;
+        DeepProfilingData deepProfilingData = 32;
+        CustomDataList customDataList = 33;
+        DynamicDataList dynamicDataList = 34;
+        AndroidMemDetailData androidMemDetailData = 35;
+        NetworkProfilingData NetworkProfilingData = 36;
+        ThreadCpuUsageList ThreadCpuUsageList = 37;
+        ClockSnapshot ClockSnapshot = 38;
+        AppLaunchingTime AppLaunchingTime = 39;
+        AppFullyDrawnTime AppFullyDrawnTime = 40;
+        ScreenBrightness ScreenBrightness = 41;
+        BatteryLevel BatteryLevel = 42;
+        TestingInfo testingInfo = 43;
+        CpuThrottlingData cpuThrottlingData = 44;
+        FrameGeneration frameGeneration = 45;
+    }
+    reserved 7;
+}
+
+message IosPerfData {
+    oneof value {
+        FpsData fpsData = 1;
+        FrameTimeData frameTimeData = 2;
+        JankData jankData = 3;
+        IosGpuUsageData iosGpuUsageData = 4;
+        Ios10MemData ios10MemData = 5;  // 系统版本为iOS10及iOS10之前的设备返回的内存信息, Memory information returned by devices whose system version is iOS10 and before iOS10
+        Ios11MemData ios11MemData = 6;  // 系统版本为iOS11及iOS11之后的设备返回的内存信息, Memory information returned by devices whose system version is iOS11 and after iOS11
+        CpuUsageData cpuUsageData = 7;
+        CtxSwitchData ctxSwitchData = 8;
+        WakeupsData wakeupsData = 9;
+        BatteryData batteryData = 10;
+        NetworkData networkData = 11;
+        SyslogData syslogData = 12;
+        ScreenShotData screenShotData = 13;
+        IosEnergyUsageData iosEnergyUsageData = 14;
+        BatteryTempData batteryTempData = 15;
+        IosGPUCounterBasics iosGPUCounterBasic = 16;
+        IosGPUCounterMemory iosGPUCounterMemory = 17;
+        IosGPUCounterShader iosGPUCounterShader = 18;
+        IosGPUCounterSampleCount iosSampleCount = 19;
+        NetworkData deviceNetworkData = 20;
+        PerFramePowerConsumption perFramePowerConsumption = 21;
+        DeepProfilingData deepProfilingData = 22;
+        CustomDataList customDataList = 23;
+        DynamicDataList dynamicDataList = 24;
+    }
+}
+
+message SwitchPerfData {
+    oneof value {
+        FpsData fpsData = 1;
+        FrameTimeData frameTimeData = 2;
+        JankData jankData = 3;
+        SwitchMemData switchMemData = 4;
+        UnityMonoHeapData unityMonoHeapData = 5;
+        CoreUsageData coreUsageData = 6;
+    }
+}
+
+message WindowsPerfData {
+    oneof value {
+        FpsData fpsData = 1;
+        FrameTimeData frameTimeData = 2;
+        JankData jankData = 3;
+        WindowsCpuUsage cpuUsage = 4;
+        WindowsRenderData renderData = 5;
+        WindowsMemoryUsage memoryUsage = 6;
+        WindowsIOUsage ioUsage = 7;
+        WindowsThread thread = 8;
+        WindowsHandle handle = 9;
+        WindowsGpuUsage gpuUsage = 10;
+        ScreenShotData screenshot = 11;
+        WindowsPerfTypeNtf perfTypeNtf = 12;
+        WindowsGpuMemoryUsage gpuMemoryUsage = 13;
+        CustomDataList customDataList = 14;
+        DynamicDataList dynamicDataList = 15;
+        NvidiaGpuUsage nvidiaGpuUsage = 16;
+        WindowsCpuFreq cpuFreq = 17;
+        CoreUsageData coreUsageData = 18;
+        ThreadCpuUsageList threadCpuUsageList = 19;
+        WindowsDiskUsage diskUsage = 20;
+        NetworkData networkData = 21;
+        AmdGpuUsage amdGpuUsage = 22;
+        DeepProfilingData deepProfilingData = 23;
+        WindowsCpuUsage treeCpuUsage = 24;
+        WindowsCpuCoreFreq cpuCoreFreqData = 25;
+    }
+}
+
+message PlayStationPerfData {
+    oneof value {
+        FpsData fpsData = 1;
+        ScreenShotData screenshot = 2;
+        FrameTimeData frameTimeData = 3;
+        JankData jankData = 4;
+        DynamicDataList dynamicDataList = 5;
+        CustomDataList customDataList = 6;
+        ThreadCpuUsageList threadCpuUsageList = 7;
+    }
+}
+
+message XboxPerfData {
+    oneof value {
+        FpsData fpsData = 1;
+        ScreenShotData screenshot = 2;
+        FrameTimeData frameTimeData = 3;
+        JankData jankData = 4;
+        DynamicDataList dynamicDataList = 5;
+        CustomDataList customDataList = 6;
+    }
+}
+
+message HarmonyMemoryDetail {
+    int64 time = 1;
+    int64 absTime = 2;
+    OptionalDouble gl = 3;
+    OptionalDouble graph = 4;
+    OptionalDouble hap = 5;
+    OptionalDouble dev = 6;
+    OptionalDouble dmabuf = 7;
+    OptionalDouble arkTsHeap = 8;
+    OptionalDouble nativeHeap = 9;
+    OptionalDouble guard = 10;
+    OptionalDouble stack = 11;
+    OptionalDouble db = 12;
+    OptionalDouble so = 13;
+    OptionalDouble ttf = 14;
+    OptionalDouble filePageOther = 15;
+    OptionalDouble anonPageOther = 16;
+}
+
+message HarmonyMemData {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 pss = 3;
+    OptionalInt availableMemory = 4;
+}
+
+message HarmonyPerfData {
+    oneof value {
+        FpsData fpsData = 1;
+        FrameTimeData frameTimeData = 2;
+        JankData jankData = 3;
+        AndroidGpuUsageData gpuUsageData = 4;
+        GpuFreqData gpuFreqData = 5;
+        HarmonyMemData memoryData = 6;
+        CoreUsageData coreUsageData = 8;
+        CpuFreqData cpuFreqData = 9;
+        CpuUsageData cpuUsageData = 10;
+        CpuTempData cpuTempData = 11;
+        BatteryData batteryData = 12;
+        NetworkData networkData = 13;
+        SyslogData syslogData = 14;
+        ScreenShotData screenShotData = 15;
+        CpuUsageData normalizedCpuUsageData = 16;
+        CoreUsageData normalizedCpuCoreUsageData = 17;
+        PerFramePowerConsumption perFramePowerConsumption = 28;
+        BatteryTempData batteryTempData = 29;
+        GpuTempData gpuTempData = 30;
+        NpuTempData npuTempData = 31;
+        DeepProfilingData deepProfilingData = 32;
+        CustomDataList customDataList = 33;
+        DynamicDataList dynamicDataList = 34;
+        HarmonyMemoryDetail memoryDetail = 35;
+        NetworkProfilingData networkProfilingData = 36;
+        ThreadCpuUsageList threadCpuUsageList = 37;
+        ClockSnapshot clockSnapshot = 38;
+        AppLaunchingTime appLaunchingTime = 39;
+        AppFullyDrawnTime appFullyDrawnTime = 40;
+        ScreenBrightness screenBrightness = 41;
+        BatteryLevel batteryLevel = 42;
+    }
+}
+
+// Performance data
+// 性能数据
+message PerfData {
+    oneof value {
+        WarningData warningData = 1;
+        ErrorData errorData = 2;
+        AndroidPerfData androidPerfData = 3;
+        IosPerfData iosPerfData = 4;
+        StartTestRet startTestRet = 5; //成功开始返回0, Returns 0 if successful
+        SwitchPerfData switchPerfData = 6;
+        WindowsPerfData windowsPerfData = 7;
+        PlayStationPerfData playStationPerfData = 8;
+        XboxPerfData xboxPerfData = 9;
+        HarmonyPerfData harmonyPerfData = 10;
+    }
+}
+
+// Cached performance data
+// 缓存性能数据
+message CachePerfData {
+    oneof value {
+        AppInfo appInfo = 1;
+        AndroidPerfData AndroidPerfData = 2;
+        IosPerfData IosPerfData = 3;
+        DeviceInfo DeviceInfo = 4;
+        SwitchPerfData SwitchPerfData = 5;
+        WindowsPerfData windowsPerfData = 6;
+        bool ignoreFps = 7;
+        MemoryReportData memoryReportData = 8;
+        PlayStationPerfData playStationPerfData = 9;
+        XboxPerfData xboxPerfData = 10;
+        HarmonyPerfData harmonyPerfData = 11;
+    }
+}
+
+message ScreenshotFile {
+    string fileName = 1; // 截图文件的名字,与json和protobuf中的截图名字对应, The name of the screenshot file corresponds to the screenshot name in json and protobuf
+    bytes fileContent = 2; // 截图文件的内容, Contents of screenshot file
+}
+
+message MemoryReportData {
+    int64 time = 1;
+    int64 absTime = 2;
+    string tagName = 3; // memreport 标签名, memreport tag name
+    string fileName = 4; // memreport 文件名, memreport file name
+    bytes fileContent = 5; // memreport 文件内容, memreport file content
+}
+
+message CachePerfDataPacked {
+    oneof value {
+        bytes perfData = 1; // json或protobuf格式的性能数据,返回一次, Performance data in json or protobuf format, returned once
+        bytes icon = 2; // APP Icon, PNG format
+        ScreenshotFile screenshotFile = 3; // Screenshot file in jpg format, returned multiple times
+    }
+}
+
+message SetLabelReq {
+    Device device = 1;
+    string label = 2;
+}
+
+message SetLabelRet {
+    int64 time = 1; // 设置的label的起始时间,可用于修改label, The starting time of the set label can be used to modify the label
+}
+
+message UpdateLabelReq {
+    Device device = 1;
+    int64 time = 2; // label的起始时间, label start time
+    string label = 3; // 新的label, new label
+}
+
+message AddNoteReq {
+    Device device = 1;
+    int64 time = 2; // 添加note的时间，此时间必须是有对应的性能指标，否则添加无效, The time to add the note. This time must have corresponding performance indicators, otherwise the addition will be invalid.
+    string note = 3;
+}
+
+message RemoveNoteReq {
+    Device device = 1;
+    int64 time = 2;
+}
+
+enum DataExportFormat {
+    EXPORT_TO_EXCEL = 0;
+    EXPORT_TO_JSON = 1;
+    EXPORT_TO_PROTOBUF = 2;
+    EXPORT_TO_PCAP = 3;
+}
+
+enum DataInterchangeFormat {
+    JSON = 0;
+    PROTOBUF = 1;
+}
+
+message SetDataUploadServerReq {
+    string serverUrl = 1; // 数据上传服务器的地址, The address of the data upload server
+    DataInterchangeFormat dataUploadFormat = 2; //上传到服务器的数据格式, Data format uploaded to server
+}
+
+message SetDataUploadServerRsp {
+}
+
+message SaveDataReq {
+    Device device = 1; // 设备标识, device
+    int64 beginTime = 2; // 开始时间, 毫秒, begin time,ms
+    int64 endTime = 3; // 结束时间, 毫秒, end time,ms
+    string caseName = 4; // case名字, case name
+    bool uploadToServer = 5; // 上传云平台(默认上传到PerfDog云平台,可通过setGlobalDataUploadServer接口自定义), Upload to the cloud platform (default uploaded to the PerfDog cloud platform, can be customized through the setGlobalDataUploadServer interface)
+    bool exportToFile = 6; // 保存到文件,输出目录为outputDirectory, Save to file, the output directory is outputDirectory
+    string outputDirectory = 7; // 文件输出路径, output directory
+    DataExportFormat dataExportFormat = 8; // 文件保存格式, file saving format
+    ExtraInfo extraInfo = 100; //扩展信息map, map of extra info
+}
+
+message ExtraInfo
+{
+    map<string, string> infoMap = 1;
+}
+
+message UploadToServerResult {
+    bool success = 1; // upload是否成功, upload successfully
+    string caseId = 2; // 上传数据成功后的case id, Case id after uploading data successfully
+}
+
+message ExportToFileResult {
+    bool success = 1; // 导出Excel文件是否成功, Export excel file successfully
+    string filePath = 2; // 保存成功后的文件路径, File path after successful saving
+}
+
+message SaveDataRsp {
+    UploadToServerResult uploadResult = 1;
+    ExportToFileResult exportResult = 2;
+}
+
+message GetAppRunningProcessReq {
+    Device device = 1; // device
+    AppInfo app = 2; // 需要查询的app, queried app
+}
+
+message GetAppWindowsMapReq {
+    Device device = 1; // 设备标识, device
+    AppInfo app = 2; // 需要查询的app, queried app
+}
+
+message ProcessInfo {
+    string name = 1; //进程的名字, process name
+    bool isTop = 2; //进程是否在前台, process in the foreground
+    int32 pid = 3; //进程id,仅在android上返回, process id, only android
+}
+
+message GetAppRunningProcessRet {
+    repeated ProcessInfo processInfo = 1;
+}
+
+message AppWindow {
+    repeated string name = 1;
+}
+
+message GetAppWindowsMapRet {
+    map<int32, AppWindow> pid2WindowMap = 1;
+}
+
+message SysProcessInfo {
+    string name = 1; // 进程名字, process name
+    int32 pid = 2; // 进程id, process pid
+    bytes icon = 3; // 进程图标，PNG格式, process icon, png format
+    string version = 4; // 版本名
+}
+
+message GetRunningSysProcessRet {
+    repeated SysProcessInfo processInfo = 1;
+}
+
+message IosEnergyUsageData {
+    int64 time = 1;
+    int64 absTime = 2;
+    int32 cpu = 3;
+    int32 gpu = 4;
+    int32 network = 5;
+    int32 location = 6;
+    int32 display = 7;
+    int32 overhead = 8;
+}
+
+message UpdateAppInfoReq {
+    Device device = 1; // 设备标识, device
+    AppInfo app = 2; // 需要更新的app, updated app
+}
+
+message UpdateAppInfoRet {
+    AppInfo app = 1; // 更新后的app信息, app after updating
+}
+
+message GetDeviceCacheDataReq {
+    Device device = 1; // 设备标识, device
+}
+
+message GetDeviceCacheDataPackedReq {
+    Device device = 1; // 设备标识, device
+    DataInterchangeFormat dataFormat = 2; // 返回的数据格式, data format
+}
+
+message CreateTaskReq {
+    string taskName = 1; // task的名字,不能超过50个字符, task name, length less than 50
+}
+
+message CreateTaskRsp {
+    string taskId = 1; // task id
+}
+
+message ArchiveCaseToTaskReq {
+    string caseId = 1; // 上传case后返回的case id, The case id returned after uploading the case
+    string taskId = 2; // task id
+}
+
+message ArchiveCaseToTaskRsp {
+}
+
+message ShareCaseReq {
+    string caseId = 1; // 上传case后返回的case id, The case id returned after uploading the case
+    int32 expireTime = 2; // 多久后分享失效,单位分钟,0代表永不过期, How long does it take for the share to expire, in minutes, 0 means never expires
+    bool nonPassword = 3; // 是否设置分享密码, Whether to set a sharing password
+}
+
+message ShareCaseRsp {
+    string caseUrl = 1; // case的链接, url of case
+    string password = 2; // case的密码, password
+}
+
+message DeviceListRsp {
+    repeated Device devices = 1;
+}
+
+message Preferences {
+    bool doNotInstallPerfDogApp = 1; //仅适用于android,如果设备上已经安装了PerfDogApp,此选项不生效.如果没安装,为true时不会自动安装, Applicable to android only. If PerfDogApp is already installed on the device, this option will not take effect. If it is not installed, it will not be installed automatically when set to true.
+}
+
+message SetPreferencesReq {
+    Preferences preferences = 1;
+}
+
+message SetPreferencesRsp {
+}
+
+message GetRenderResolutionReq {
+    Device device = 1;
+}
+
+message GetRenderResolutionRet {
+    int32 width = 1;
+    int32 height = 2;
+}
+
+message GetCpuInfoReq {
+    Device device = 1;
+}
+
+message GetCpuInfoRsp {
+    int32 coreNum = 1;
+    repeated int32 coreMaxFreq = 2; //个数和coreNum一致,0代表不支持, The number is consistent with coreNum, 0 means not supported
+}
+
+message SetMemorySamplingFrequencyReq {
+    Device device = 1;
+    int32 freq = 2;//多少秒获取一次, frequency
+}
+
+enum FloatingWindowMessage {
+    START_RECORD = 0;
+    STOP_RECORD = 1;
+    ADD_LABEL = 2;
+}
+
+message TransferFloatingWindowMessageReq {
+    Device device = 1;
+    FloatingWindowMessage message = 2;
+    string labelName = 3;
+}
+
+enum FloatingWindowPosition {
+    TOP_LEFT = 0;
+    TOP_RIGHT = 1;
+    HIDE = 2;
+}
+
+message Color {
+    double red = 1;
+    double green = 2;
+    double blue = 3;
+    double alpha = 4;
+}
+
+enum DXVersion {
+    AUTO = 0;
+    DX_9 = 1;
+    DX_11 = 2;
+    DX_12 = 3;
+}
+
+message SetFloatingWindowPreferencesReq {
+    Device device = 1;
+    FloatingWindowPosition position = 2;
+    Color fontColor = 3;
+    string recordHotKey = 4;
+    string addLabelHotKey = 5;
+    string resolutionHotKey = 6;
+}
+
+message UnrealMemoryReportReq {
+    Device device = 1;
+    string tagName = 2;
+}
+
+message UpdateMemoryReportReq {
+    Device device = 1;
+    int64 time = 2;
+    string tagName = 3; // 新的tagName, new tag name
+}
+
+message GetPresetNetworkProfilingTemplateReq {
+}
+
+message GetPresetNetworkProfilingTemplateRsp {
+    repeated NetworkProfilingTemplate templates = 1;
+}
+
+message SubmitUserNetworkProfilingTemplateReq {
+    NetworkProfilingTemplate template = 1;
+}
+
+message SubmitUserNetworkProfilingTemplateRsp {
+    int32 id = 1;
+}
+
+message UpdateUserNetworkProfilingTemplateReq {
+    NetworkProfilingTemplate template = 1;
+}
+
+message DeleteUserNetworkProfilingTemplateReq {
+    int32 templateId = 1;
+}
+
+message ChangeNetworkTemplateReq {
+    Device device = 1;
+    NetworkProfilingTemplate template = 2;
+}
+
+message ChangeNetworkTemplateRsp {
+}
+
+message AddRemoteHostDeviceReq {
+    DEVICE_OSTYPE type = 1;
+    string ip = 2;
+    string password = 3;
+}
+
+message CheckDeviceOccupiedByOtherUsersReq {
+    Device device = 1;
+}
+
+message SetPairedPasswordReq {
+    Device device = 1;
+    string password = 2;
+}
+
+message CheckDeviceOccupiedByOtherUsersRsp {
+    string otherUser = 1;
+}
+
+message LaunchAsRemoteCollectorRsp {
+    OptionBool result = 1;
+}
+
+message SetEnableDevAppTestReq {
+    Device device = 1;
+    bool enable = 2;
+}
+
+service PerfDogService {
+    // Log in with the requested token
+    // 通过申请的token登录
+    rpc loginWithToken (Token) returns (UserInfo) {
+    }
+
+    // Get a list of online devices
+    // 获取在线设备列表
+    rpc getDeviceList (Empty) returns (DeviceListRsp) {
+    }
+
+    // Start a device monitor
+    // 启动设备监听器
+    rpc startDeviceMonitor (Empty) returns (stream DeviceEvent) {
+    }
+
+    rpc listenGlobalEvent (Empty) returns (stream GlobalEvent) {
+    }
+
+    // Returns true if the device is ios17 or above and no driver is installed, otherwise returns false
+    // 设备为ios17以上且未安装驱动返回true，否则返回false
+    rpc checkIos17AboveDriveUninstalled (Device) returns (OptionBool) {
+    }
+
+    // Initialize the device
+    // 初始化设备
+    rpc initDevice (Device) returns (Empty) {
+    }
+
+    // Get device information
+    // 获取设备信息
+    rpc getDeviceInfo (Device) returns (DeviceInfo) {
+    }
+
+    // Get device status
+    // 获取设备状态
+    rpc getDeviceStatus (Device) returns (DeviceStatus) {
+    }
+
+    // Get a list of device applications
+    // 获取设备APP列表
+    rpc getAppList (Device) returns (AppList) {
+    }
+
+    // Enable data type
+    // 开启数据类型
+    rpc enablePerfDataType (EnablePerfDataTypeReq) returns (Empty) {
+    }
+
+    // Disable data type
+    // 关闭数据类型
+    rpc disablePerfDataType (DisablePerfDataTypeReq) returns (Empty) {
+    }
+
+    // Get a list of enabled data types
+    // 获取已开启数据类型的列表
+    rpc getPerfDataType (Device) returns (PerfDataTypeRet) {
+    }
+
+    // Get a list of available data types
+    // 获取设备可以开启的数据项
+    rpc getAvailableDataType (Device) returns (PerfDataTypeRet) {
+    }
+
+    // Set the screenshot interval
+    // 设置截屏时间间隔
+    rpc setScreenShotInterval (ScreenShotInterval) returns (Empty) {
+    }
+
+    // Compatible with older versions, not recommended
+    // 兼容旧版本，不建议使用
+    rpc StartTestAppInternal (StartTestAppReq) returns (stream PerfData) {
+    }
+
+    // Compatible with older versions, not recommended
+    // 兼容旧版本，不建议使用
+    rpc StartTestSysProcessInternal (StartTestSysProcessReq) returns (stream PerfData) {
+
+    }
+
+    // Start test
+    // The data types enabled by Android by default are FPS, CPU_USAGE, MEMORY, CPU_TEMPERATURE, NETWORK_USAGE, FRAME_TIME, and BATTERY (wifi mode)
+    // The data types enabled by iOS by default are FPS, CPU_USAGE, MEMORY, IOS_GPU_USAGE, NETWORK_USAGE, CTX_SWITCH, FRAME_TIME (usb mode) and BATTERY (wifi mode)
+    // If you need to enable other data types or disable them, use the enablePerfDataType and disablePerfDataType interfaces
+    // 开始测试
+    // Android默认开启的数据类型有FPS、CPU_USAGE、MEMORY、CPU_TEMPERATURE、NETWORK_USAGE、FRAME_TIME和BATTERY(wifi模式)
+    // iOS默认开启的数据类型有FPS、CPU_USAGE、MEMORY、IOS_GPU_USAGE、NETWORK_USAGE、CTX_SWITCH、FRAME_TIME(usb模式)和BATTERY(wifi模式)
+    // 如果需要开启或者关闭其他数据类型，请使用enablePerfDataType和disablePerfDataType接口
+    rpc startTestApp (StartTestAppReq) returns (StartTestRet) {
+    }
+
+    rpc startTestSysProcess (StartTestSysProcessReq) returns (StartTestRet) {
+    }
+
+    // Get real-time test data streams from devices
+    // 获取设备实时的测试数据流
+    rpc openPerfDataStream (OpenPerfDataStreamReq) returns (stream PerfData) {
+    }
+
+    // Stop test
+    // 结束测试
+    rpc stopTest (StopTestReq) returns (Empty) {
+    }
+
+    // set Label
+    // 设置Label
+    rpc setLabel (SetLabelReq) returns (SetLabelRet) {
+    }
+
+    // Modify the name of the label
+    // 修改label的名字
+    rpc updateLabel (UpdateLabelReq) returns (Empty) {
+    }
+
+    // add note
+    // 添加批注
+    rpc addNote (AddNoteReq) returns (Empty) {
+    }
+
+    // delete note
+    // 删除批注
+    rpc removeNote (RemoveNoteReq) returns (Empty) {
+    }
+
+    // Set the global data upload server, if you don't set it, it will be uploaded to PerfDog cloud platform by default.
+    // 设置全局的数据上传服务器,不设置的情况下默认上传到PerfDog云平台
+    rpc setGlobalDataUploadServer (SetDataUploadServerReq) returns (SetDataUploadServerRsp) {
+    }
+
+    // Upload data (default upload to PerfDog cloud platform, can be modified through the setGlobalDataUploadServer interface), while saving to a local Excel file.
+    // 上传数据(默认上传到PerfDog云平台,可通过setGlobalDataUploadServer接口修改),同时保存到本地Excel文件
+    rpc saveData (SaveDataReq) returns (SaveDataRsp) {
+    }
+
+    // Get the device's cached data, and return the data by item.
+    // 获取设备的缓存数据,数据按条返回
+    rpc getDeviceCacheData (GetDeviceCacheDataReq) returns (stream CachePerfData) {
+    }
+
+    // Get the cache data of the device, pack the data into json or protobuf and return it at once.
+    // 获取设备的缓存数据,数据打包成json或protobuf一次返回
+    rpc getDeviceCacheDataPacked (GetDeviceCacheDataPackedReq) returns (stream CachePerfDataPacked) {
+    }
+
+    // Get a list of processes running on the device for this app
+    // 获取设备上app正在运行的进程列表
+    rpc getAppRunningProcess (GetAppRunningProcessReq) returns (GetAppRunningProcessRet) {
+    }
+
+    // Get the Activity and SurfaceView corresponding to each process id of the app, only for android.
+    // 获取app每个进程id对应的Activity和SurfaceView,仅适用于android
+    rpc getAppWindowsMap (GetAppWindowsMapReq) returns (GetAppWindowsMapRet) {
+    }
+
+    rpc getRunningSysProcess (Device) returns (GetRunningSysProcessRet) {
+    }
+
+    // Refresh app information, used to get the app list after the app modified the app under test (such as upgrading the version)
+    // 刷新app的信息,用于获取完app列表后修改了被测app(例如升级了版本)的情况
+    rpc updateAppInfo (UpdateAppInfoReq) returns (UpdateAppInfoRet) {
+    }
+
+    // Interface on the web for creating task
+    // web上的创建任务接口
+    rpc createTask (CreateTaskReq) returns (CreateTaskRsp) {
+    }
+
+    // Interface on the web for archiving cases to task
+    // web上的把case归档到task的接口
+    rpc archiveCaseToTask (ArchiveCaseToTaskReq) returns (ArchiveCaseToTaskRsp) {
+    }
+
+    // Interface on the web for sharing case
+    // web上的分享case接口
+    rpc shareCase (ShareCaseReq) returns (ShareCaseRsp) {
+    }
+
+    // Set the running configuration
+    // 设置运行配置
+    rpc setPreferences (SetPreferencesReq) returns (SetPreferencesRsp) {
+    }
+
+    // Get the rendering resolution of the test app, supported only for Android
+    // 获取测试App的渲染分辨率，仅支持Android
+    rpc getRenderResolutionOfWindowUnderTest (GetRenderResolutionReq) returns (GetRenderResolutionRet) {
+    }
+
+    // Get CPU core count and maximum frequency
+    // 获取CPU核心数和最大频率
+    rpc getCpuInfo(GetCpuInfoReq) returns (GetCpuInfoRsp) {
+    }
+
+    // Set memory sampling frequency, only for android
+    // 设置内存采样频率,仅用于android
+    rpc setMemorySamplingFrequency(SetMemorySamplingFrequencyReq) returns (Empty) {
+    }
+
+    // Send the display content of the hover window, only for windows
+    // 发送悬浮窗的显示内容，仅用于windows
+    rpc transferFloatingWindowMessage(TransferFloatingWindowMessageReq) returns (Empty) {
+    }
+
+    // Get unreal memory report
+    // 获取 unreal memory report
+    rpc generateUnrealMemoryReport(UnrealMemoryReportReq) returns (MemoryReportData) {
+    }
+
+    // Modify tag name of memory report
+    // 修改 memory report 标签名
+    rpc updateMemoryReportInfo(UpdateMemoryReportReq) returns (Empty) {
+    }
+
+    // Close PerfDogService
+    // 关闭PerfDogService
+    rpc killServer (Empty) returns (Empty) {
+    }
+
+    // Set the position and font color of the hover window for android and windows
+    // 设置悬浮窗位置和字体颜色，用于android和windows
+    rpc setFloatingWindowPreferences(SetFloatingWindowPreferencesReq) returns (Empty) {
+    }
+
+    // Pull default and user-created web templates
+    // 拉取默认的和用户创建的网络模版
+    rpc getPresetNetworkProfilingTemplate(GetPresetNetworkProfilingTemplateReq) returns(GetPresetNetworkProfilingTemplateRsp) {
+    }
+
+    // Submit user's web template
+    // 提交用户的网络模板
+    rpc submitUserNetworkProfilingTemplate(SubmitUserNetworkProfilingTemplateReq) returns(SubmitUserNetworkProfilingTemplateRsp) {
+    }
+
+    // Update user's web template
+    // 更新用户的网络模板
+    rpc updateUserNetworkProfilingTemplate(UpdateUserNetworkProfilingTemplateReq) returns(Empty) {
+    }
+
+    // Delete user's web template
+    // 删除用户的网络模板
+    rpc deleteUserNetworkProfilingTemplate(DeleteUserNetworkProfilingTemplateReq)  returns(Empty) {
+    }
+
+    // Modify weak network simulation parameters during testing
+    // 用于在测试过程中修改弱网模拟参数
+    rpc changeNetworkTemplate(ChangeNetworkTemplateReq) returns(ChangeNetworkTemplateRsp) {
+    }
+
+    // Add a remote host device
+    // 添加远程控制的主机设备
+    rpc addRemoteHostDevice(AddRemoteHostDeviceReq) returns(Empty) {
+    }
+
+    // Check whether the target is occupied by other users
+    // 确认主机是否被其它用户占用
+    rpc checkDeviceOccupiedByOtherUsers(CheckDeviceOccupiedByOtherUsersReq) returns(CheckDeviceOccupiedByOtherUsersRsp) {
+    }
+
+    rpc setPairedPasswordResponse(SetPairedPasswordReq) returns(Empty) {
+    }
+
+    // Launch as a remote collector
+    // 以远端采集器方式启动
+    rpc launchAsRemoteCollector(Empty) returns(LaunchAsRemoteCollectorRsp) {
+    }
+
+    // Refresh the remote computer list
+    // 刷新远程电脑列表
+    rpc updateRemoteWindowsDevice(Empty) returns(Empty) {
+    }
+
+    // enable test for dev apps,only for ios
+    // 支持dev app测试，仅用于ios
+    rpc setEnableDevAppTest(SetEnableDevAppTestReq) returns(Empty) {
+    }
+}

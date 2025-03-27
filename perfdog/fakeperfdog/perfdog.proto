@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package com.fake.perfdog.proto;
+option java_multiple_files = true;
+option go_package = "/fakeperfdog";
+
+message Token {
+    string token = 1;
+}
+
+message UserInfo {
+    string name = 1; // 名字, name
+    string pic = 2; // 头像url, avatar url
+    string email = 3; // 邮箱, email
+    string id = 4; // 用户id, user id
+}
+
+service PerfDogService {
+    // Log in with the requested token
+    // 通过申请的token登录
+    rpc loginWithToken (Token) returns (UserInfo) {
+    }
+
+    // Start test
+    // The data types enabled by Android by default are FPS, CPU_USAGE, MEMORY, CPU_TEMPERATURE, NETWORK_USAGE, FRAME_TIME, and BATTERY (wifi mode)
+    // The data types enabled by iOS by default are FPS, CPU_USAGE, MEMORY, IOS_GPU_USAGE, NETWORK_USAGE, CTX_SWITCH, FRAME_TIME (usb mode) and BATTERY (wifi mode)
+    // If you need to enable other data types or disable them, use the enablePerfDataType and disablePerfDataType interfaces
+    // 开始测试
+    // Android默认开启的数据类型有FPS、CPU_USAGE、MEMORY、CPU_TEMPERATURE、NETWORK_USAGE、FRAME_TIME和BATTERY(wifi模式)
+    // iOS默认开启的数据类型有FPS、CPU_USAGE、MEMORY、IOS_GPU_USAGE、NETWORK_USAGE、CTX_SWITCH、FRAME_TIME(usb模式)和BATTERY(wifi模式)
+    // 如果需要开启或者关闭其他数据类型，请使用enablePerfDataType和disablePerfDataType接口
+    // rpc startTestApp (StartTestAppReq) returns (StartTestRet) {
+    // }
+
+    // Stop test
+    // 结束测试
+    // rpc stopTest (StopTestReq) returns (Empty) {
+    // }
+}
