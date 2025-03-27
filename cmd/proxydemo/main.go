@@ -6,6 +6,8 @@ import (
 	"net"
 	"time"
 
+	"github.com/mwitkow/grpc-proxy/perfdog/fakeperfdog"
+	"github.com/mwitkow/grpc-proxy/perfdog/perfdog"
 	"github.com/mwitkow/grpc-proxy/proxy"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -16,7 +18,7 @@ func main() {
 	defer cancel()
 
 	backendCC, err := grpc.DialContext(ctx,
-		"localhost:23457", // perfdog addr
+		"localhost:23456", // perfdog addr
 		grpc.WithInsecure(),
 		grpc.WithBlock(),
 		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(10*1024*1024)))
@@ -24,6 +26,8 @@ func main() {
 		panic(err)
 		//return nil, fmt.Errorf("dialing backend: %v", err)
 	}
+
+	perfCC = perfdog.NewPerfDogServiceClient(backendCC)
 	// First, we need to create a client connection to this backend.
 	// proxySrv := proxy.NewProxy(backendCC)
 
@@ -35,6 +39,8 @@ func main() {
 		return outCtx, backendCC, nil
 	}
 	proxySrv := grpc.NewServer(grpc.UnknownServiceHandler(proxy.TransparentHandler(directorFn)))
+
+	fakeperfdog.RegisterPerfDogServiceServer(proxySrv, defaultPerfDogServiceServer)
 	proxyBc, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", 9002))
 	if err != nil {
 		panic(err)
